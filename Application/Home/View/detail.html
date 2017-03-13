@@ -1,0 +1,21 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="__ROOT__/Public/Ueditor/ueditor.parse.js"></script>
+
+<title>AppInventor案例交流</title>
+</head>
+  <body>
+  <div id="ueditor">
+  </div>
+  <script type="text/javascript">
+       uParse('.ueditor',{
+        rootPath:"__ROOT__/Public/Ueditor/"
+       })
+       var dom = document.getElementById('ueditor');
+       dom.innerHTML = '{$htmlContent}';
+       </script>
+  </body>
