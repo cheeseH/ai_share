@@ -5,12 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="__ROOT__/Public/register/assets/bootstrap/css/bootstrap.min.css">
-<script src="__ROOT__/Public/register/assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 
 <title>AppInventor案例交流</title>
 </head>
   <body>
-        <nav class="navbar navbar-fixed-top navbar-inverse">
+       <nav class="navbar navbar-fixed-top navbar-inverse">
       <div class="container">
         <div class="navbar-header">
           <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -54,60 +55,51 @@
           </div>
           -->
           <div class="row">
-          <foreach name="list" item="example">
-                <div class="col-xs-6 col-lg-4">
-                  <h2>{$example['title']}</h2>
-                  <p>{$example['brief']}</p>
-                  <p><a class="btn btn-default" href="{:U('/Home/example/exampleDetail/id/'.$example[id])}" role="button">View details &raquo;</a></p>
-                </div><!--/.col-xs-6.col-lg-4-->
-          </foreach>
-            </div>
-            <div class="row">
-            <nav aria-label="...">
-  <ul class="pagination">
-  <php>
-    if($prevEnable){
-  </php>
-    <li class><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-    <php>
-      }
-      else{
-    </php>
-    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
-    <php>
-    }
-      $current = 0;
+         <form class="form-horizontal" role="form">
+  <div class="form-group">
+    <label for="firstname" class="col-sm-2 control-label">真实姓名</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="firstname" value="{$data['real_name']}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">地址</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="lastname" value="{$data['address']}">
+    </div>
+  </div>
 
-      while($current < $pageCount){
-        $p  = $beginPage + $current;
-        if($p == $page){
-    </php>
-    <li class="active"><a href="#">{$p} <span class="sr-only">(current)</span></a></li>
-    <php>
-      }else{
-    </php>
-    <li><a href="#">{$p}</a></li>
-    <php>
-    $current++;
-    }
-    }
-    if($nextEnable){
-    </php>
+  <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">手机号码</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="lastname" value="{$data['mobile']}">
+    </div>
+  </div>
+
+    <div class="form-group">
+    <label for="lastname" class="col-sm-2 control-label">QQ</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="lastname" value="{$data['qq_number']}">
+    </div>
+  </div>
   
-    <li class><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-    <php>
-    }else{
-    </php>
-    <li class="disabled"><a href="#" aria-label="Next"><span aria-hidden="true">&raquo;</span></a></li>
-    <php>
-      }
-    </php>
-  </ul>
-</nav>
-          </div><!--/row-->
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">确认</button>
+    </div>
+  </div>
+</form>
+
+</div>
+
+                    <if condition="$alert == true">
+                                    <div class="row">
+                                                <div class="alert alert-danger" role="alert">{$alertInfo}</div>
+                                       </div>         
+                   </if>
         </div><!--/.col-xs-12.col-sm-9-->
 
-        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
           <div class="list-group">
             <a href="{:U('Search/index')}" class="list-group-item">搜索</a>
             <if condition="!isset($_SESSION['userId'])">

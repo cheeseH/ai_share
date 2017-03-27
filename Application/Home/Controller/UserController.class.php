@@ -80,18 +80,27 @@ class UserController extends Controller{
 		$pc = new PublicController();
 
 		if(!$pc->check_verify($code)){
-			$this->registerError('验证码初一我也');
+			$this->registerError('验证码错误');
 			die();
 		}
-
+		$IC = D('invite_code');
+		$code = I('post.inviteCode');
+		$data = $IC->where("code = '$code'")->find();
+		if(!$data){
+			$this->registerError('邀请码错误');
+			die();
+		}
+		$inviteId = $data['user_id'];
 		$newData = array();
 		$newData['username'] = $username;
 		$newData['password'] = md5($password);
 		$newData['sex'] = $sex;
 		$newData['nickname'] = $nickname;
-		$User->data($newData)->add();
+		$usrId = $User->data($newData)->add();
+		$UserOther = D('user_other');
+		$otherData = array('invite_user_id'=>$inviteId,'user_id'=>$usrId);
+		$UserOther->data($otherData)->add();
 		$this->innerLogin($username,$password);
-		
 
 	}
 
@@ -170,7 +179,8 @@ class UserController extends Controller{
 
 		}
 		$inviteCode = D('invite_code');
-		$codeData = $inviteCode->find($_SESSION['userId']);
+		$where = array('user_id'=>$_SESSION['userId']);
+		$codeData = $inviteCode->where($where)->find();
 		if(!$codeData){
 			$insert = array();
 			$insert['user_id'] = $_SESSION['userId'];
@@ -179,7 +189,96 @@ class UserController extends Controller{
 			$codeData = $insert;
 		}
 		$this->assign('inviteCode' , $codeData['code']);
+		$this->display('./inviteCode');
+
+	}
+
+	public function inviteUnchecked(){
+		$userOther = M('user_other');
+		$subquery = $userOther->field('user_id')->where("`invite_user_id` = $_SESSION[userId]")->select(false);
+		$condition = array();
+		
+		
+		$User = D('user');
+		$data = $User->where("`id` IN ($subquery) AND `state`='UNCHECKED'")->select();
+		$this->assign('users',$data);
+		$this->display('./unchecked');
+
+	}
 
 
+
+	private function userInfo($uid){
+		$User = D('user_info');
+		$data = $User->find($uid);
+
+
+		
+
+	}
+
+	public function selfInfo(){
+		$User = D('user');
+		$data = $User->field('state')->find($_SESSION['userId']);
+		$state = $data['state'];
+		if($state == 'UNWRITE'){
+			$this->redirect("/Home/User/selfInfoWrite");
+		} 
+		else if($state == 'UNCHECKED'){
+			$this->redirect("/Home/User/selfInfoUnchecked");
+		}
+		$UI = D('user_info');
+		$data = $UI->find($_SESSION['userId']);
+		$this->assign('data',$data);
+		$this->display('./userInfo');
+	}
+
+	public function selfInfoWrite(){
+		$this->display('./selfInfoWrite');
+	}
+
+	public function selfInfoUnchecked(){
+		$this->assign('alert',true);
+		$this->assign('alertInfo','您的信息正在等待邀请人审核');
+		$data = $this->userInfo($_SESSION['userId']);
+		$this->assign('data',$data);
+		$this->display('./userInfo');
+	}
+
+	public function selfInfoEdit(){
+		$data = $this->userInfo($_SESSION['userId']);
+		$this->assign('data',$data);
+		$this->dsiplay('./selfInfoEdit');
+	}
+
+	public function inviteUserCheck(){
+		$uid = I('post.id');
+		$data = $this->userInfo($uid);
+		$this->assign('data',$data);
+		$this->display('./userInfoChecked');
+	}
+
+	public function userCheckPost(){
+		$uid = I('post.id');
+		$iu = $_SESSION['userId'];
+		$userOther = D('user_other');
+		$user = $userOther->find($uid);
+		if($user['invite_user_id'] != $iu){
+
+		}
+		$User = D('user');
+		$update = array( "state" => 'CHECKED');
+		$User->where("id = $uid")->save($update);
+	}
+
+	public function pwFind(){
+
+	}
+
+	public function userTest(){
+		$User = D('user_info');
+		$data = $User->find(1);
+		$this->assign('data',$data);
+		$this->display("./userInfoChecked");
 	}
 }

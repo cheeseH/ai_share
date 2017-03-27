@@ -12,7 +12,7 @@
 namespace Think;
 
 class Verify {
-    protected $config =	array(
+    protected $config = array(
         'seKey'     =>  'ThinkPHP.CN',   // 验证码加密密钥
         'codeSet'   =>  '2345678abcdefhijkmnpqrstuvwxyzABCDEFGHJKLMNPQRTUVWXY',             // 验证码字符集合
         'expire'    =>  1800,            // 验证码过期时间（s）
@@ -21,13 +21,13 @@ class Verify {
         'useImgBg'  =>  false,           // 使用背景图片 
         'fontSize'  =>  25,              // 验证码字体大小(px)
         'useCurve'  =>  true,            // 是否画混淆曲线
-        'useNoise'  =>  true,            // 是否添加杂点	
+        'useNoise'  =>  true,            // 是否添加杂点  
         'imageH'    =>  0,               // 验证码图片高度
         'imageW'    =>  0,               // 验证码图片宽度
         'length'    =>  5,               // 验证码位数
         'fontttf'   =>  '',              // 验证码字体，不设置随机获取
         'bg'        =>  array(243, 251, 254),  // 背景颜色
-        'reset'     =>  false,           // 验证成功后是否重置
+        'reset'     =>  true,           // 验证成功后是否重置
         );
 
     private $_image   = NULL;     // 验证码图片实例
@@ -87,13 +87,10 @@ class Verify {
         // 验证码不能为空
         $secode = session($key);
         if(empty($code) || empty($secode)) {
-            echo '2';
             return false;
         }
         // session 过期
         if(NOW_TIME - $secode['verify_time'] > $this->expire) {
-            echo '1';
-            die();
             session($key, null);
             return false;
         }
@@ -102,8 +99,7 @@ class Verify {
             $this->reset && session($key, null);
             return true;
         }
-        echo '3';
-        die();
+
         return false;
     }
 
@@ -126,12 +122,12 @@ class Verify {
 
         // 验证码字体随机颜色
         $this->_color = imagecolorallocate($this->_image, mt_rand(1,150), mt_rand(1,150), mt_rand(1,150));
-        // 验证码使用随机字体er/registerPost
+        // 验证码使用随机字体
         $ttfPath = dirname(__FILE__) . '/Verify/' . ($this->useZh ? 'zhttfs' : 'ttfs') . '/';
 
         if(empty($this->fontttf)){
             $dir = dir($ttfPath);
-            $ttfs = array();		
+            $ttfs = array();        
             while (false !== ($file = $dir->read())) {
                 if($file[0] != '.' && substr($file, -4) == '.ttf') {
                     $ttfs[] = $file;
@@ -180,7 +176,7 @@ class Verify {
         session($key.$id, $secode);
                         
         header('Cache-Control: private, max-age=0, no-store, no-cache, must-revalidate');
-        header('Cache-Control: post-check=0, pre-check=0', false);		
+        header('Cache-Control: post-check=0, pre-check=0', false);      
         header('Pragma: no-cache');
         header("content-type: image/png");
 
@@ -193,7 +189,7 @@ class Verify {
      * 画一条由两条连在一起构成的随机正弦函数曲线作干扰线(你可以改成更帅的曲线函数) 
      *      
      *      高中的数学公式咋都忘了涅，写出来
-     *		正弦型函数解析式：y=Asin(ωx+φ)+b
+     *      正弦型函数解析式：y=Asin(ωx+φ)+b
      *      各常数值对函数图像的影响：
      *        A：决定峰值（即纵向拉伸压缩的倍数）
      *        b：表示波形在Y轴的位置关系或纵向移动距离（上加下减）
@@ -218,18 +214,18 @@ class Verify {
             if ($w!=0) {
                 $py = $A * sin($w*$px + $f)+ $b + $this->imageH/2;  // y = Asin(ωx+φ) + b
                 $i = (int) ($this->fontSize/5);
-                while ($i > 0) {	
-                    imagesetpixel($this->_image, $px + $i , $py + $i, $this->_color);  // 这里(while)循环画像素点比imagettftext和imagestring用字体大小一次画出（不用这while循环）性能要好很多				
+                while ($i > 0) {    
+                    imagesetpixel($this->_image, $px + $i , $py + $i, $this->_color);  // 这里(while)循环画像素点比imagettftext和imagestring用字体大小一次画出（不用这while循环）性能要好很多               
                     $i--;
                 }
             }
         }
         
         // 曲线后部分
-        $A = mt_rand(1, $this->imageH/2);                  // 振幅		
+        $A = mt_rand(1, $this->imageH/2);                  // 振幅        
         $f = mt_rand(-$this->imageH/4, $this->imageH/4);   // X轴方向偏移量
         $T = mt_rand($this->imageH, $this->imageW*2);  // 周期
-        $w = (2* M_PI)/$T;		
+        $w = (2* M_PI)/$T;      
         $b = $py - $A * sin($w*$px + $f) - $this->imageH/2;
         $px1 = $px2;
         $px2 = $this->imageW;
@@ -238,8 +234,8 @@ class Verify {
             if ($w!=0) {
                 $py = $A * sin($w*$px + $f)+ $b + $this->imageH/2;  // y = Asin(ωx+φ) + b
                 $i = (int) ($this->fontSize/5);
-                while ($i > 0) {			
-                    imagesetpixel($this->_image, $px + $i, $py + $i, $this->_color);	
+                while ($i > 0) {            
+                    imagesetpixel($this->_image, $px + $i, $py + $i, $this->_color);    
                     $i--;
                 }
             }
@@ -270,7 +266,7 @@ class Verify {
         $path = dirname(__FILE__).'/Verify/bgs/';
         $dir = dir($path);
 
-        $bgs = array();		
+        $bgs = array();     
         while (false !== ($file = $dir->read())) {
             if($file[0] != '.' && substr($file, -4) == '.jpg') {
                 $bgs[] = $path . $file;
@@ -289,10 +285,9 @@ class Verify {
 
     /* 加密验证码 */
     private function authcode($str){
-        // $key = substr(md5($this->seKey), 5, 8);
-        // $str = substr(md5($str), 8, 10);
-        // return md5($key . $str);
-        return $str;
+        $key = substr(md5($this->seKey), 5, 8);
+        $str = substr(md5($str), 8, 10);
+        return md5($key . $str);
     }
 
 }

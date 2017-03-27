@@ -113,4 +113,8 @@ class IndexController extends Controller {
     public function saveinfo(){
     	dump($_SESSION);
     }
+
+    public function testAjaxPost(){
+    	var_dump(I('post.'));
+    }
 }

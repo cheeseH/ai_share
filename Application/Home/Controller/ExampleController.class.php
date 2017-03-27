@@ -37,19 +37,54 @@ class ExampleController extends Controller{
 		$this->display('./post');
 	}
 	public function examplePost(){
-		$this->check_login();
-		$title = I('post.title');
-		$content = $_POST['content'];
-		$code = I('post.j_verify');
+		 $this->check_login();
+		 $title = I('post.title');
+		 $content = $_POST['content'];
+		 $code = I('post.j_verify');
+		 $author = $_POST['zuozhe'];
+		 $authorData = json_decode($author,true);
+		 $authorDB = array();
+		 foreach ($authorData as $key => $auth) {
+		 	# code...
+		 	$imgData = $auth['touxiang'];
+		 	$Img = D('author_img');
+		 	$data = array('data'=>$imgData);
+		 	$result = $Img->data($data)->add();
+		 	$auth['touxiang'] = $result;
+		 	array_push($authorDB,$auth);
+		 }
+		 $author = json_encode($authorDB);
+		
+		 $classic = trim(I('post.checkbox'),'[]');
+		 $tag = trim(I('post.tags'),'[]');
 		$pc = new PublicController();
 		if(!$pc->check_verify($code)){
-			print_r($_POST);
+			$ar = array('status'=>'验证码错误');
+			$this->assign('result',json_encode($ar));
+			$this->display('./classicAjax');
+			die();
 		}
+
+		//分类处理
+		$Classic = D('classic');
+		$classicNameArray = explode(",",$classic);
+		$classicIdArray = array();
+		foreach ($classicNameArray as $key => $classicName) {
+			# code...
+			$where = array('name'=>$classicName);
+			$data = $Classic->field('id')->where($where)->find();
+			array_push($classicIdArray,$data['id']);
+		}
+		$classicIds = implode(",",$classicIdArray);
+		
 		$Example = D('example');
 		$data = array(
 			'title' => $title,
 			'content' => $content,
-			'author_id' => $_SESSION['userId']
+			'author_id' => $_SESSION['userId'],
+			'authors' => $author,
+			'tag' => $tag,
+			'classic' => $classicIds
 		);
 		$result = $Example->data($data)->add();
 		if(!$result){
@@ -61,7 +96,9 @@ class ExampleController extends Controller{
 			'example_id' =>$result
 		);	
 		$Attachment->where("`temp_id` = '$_SESSION[temp_post_id]'")->save($update);
-		$this->redirect("/Home/example/exampleDetail/$result");	
+		$ajaxResult = array('status'=>'ok','url'=>U("Home/Example/exampleDetail/$result"));
+		$this->assign('result',json_encode($ajaxResult));
+		$this->display('./classicAjax');
 	}
 
 	public function myExample(){
@@ -103,6 +140,8 @@ class ExampleController extends Controller{
 		$Example = D('example');
 		$data = $Example->where("`id` = $exampleId")->find();
 		$htmlContent = $data['content'];
+		$tag = $data['tag'];
+		$this->assign('tag',$tag);
 		$this->assign('htmlContent' , $htmlContent);
 		$user = D('User');
 		$userData = $user->where("`id` = $data[author_id]")->find();

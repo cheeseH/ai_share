@@ -25,7 +25,7 @@ class AdminController extends Controller{
 	    	
 
 	    	foreach ($list as $id => $example) {
-	    		# code...
+	    		# code...o
 	    		$list[$id]['brief'] = substr(strip_tags($list[$id]['content']), 0,25);
 	    		$list[$id]['authorName'] = $list[$id]['author']['nickname'];
 
@@ -52,5 +52,13 @@ class AdminController extends Controller{
 
 	public function exampleJudgePost(){
 		
+	}
+
+	public function classicControl(){
+		
+	}
+
+	public function giftControl(){
+
 	}
 }

@@ -83,7 +83,9 @@
              }
              </php>
             </p>
-
+            <p>标签：{$tag}</p>
+            <p>分类：</p>
+            <hr/>
             <div id="ueditor">
             </div>
           </div><!-- /.blog-post -->
@@ -94,9 +96,9 @@
 
         </div><!-- /.blog-main -->
 
-        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
-        <div class="list-group">
-           <a href="{:U('Search/index')}" class="list-group-item">搜索</a>
+        <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+          <div class="list-group">
+            <a href="{:U('Search/index')}" class="list-group-item">搜索</a>
             <if condition="!isset($_SESSION['userId'])">
             <a href="{:U('User/login')}" class="list-group-item">登陆</a>
             <else />
@@ -105,9 +107,11 @@
             <if condition="$_SESSION['level'] eq 0">
             <a href="{:U('admin/index')}" class="list-group-item">后台管理</a>
             </if>
+            <a href="{:U('User/inviteCode')}" class="list-group-item">我的邀请码</a>
             <a href="{:U('User/logout')}" class="list-group-item">退出</a>
 
             </if>
+
        <!--     <a href="#" class="list-group-item">Link</a>
             <a href="#" class="list-group-item">Link</a>
             <a href="#" class="list-group-item">Link</a>
@@ -118,10 +122,8 @@
             <a href="#" class="list-group-item">Link</a>
           -->
           </div>
-          </div>
-        </div><!-- /.blog-sidebar -->
-
-      </div><!-- /.row -->
+        </div><!--/.sidebar-offcanvas-->
+      </div><!--/row-->
 </div>
     </div><!-- /.container -->
 
@@ -130,6 +132,7 @@
       <p>
         <a href="#">Back to top</a>
       </p>
+      <p>
     </footer>
 
 
